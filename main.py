@@ -149,7 +149,9 @@ def see_current_meals(user):
     meals = Meal.query.filter(Meal.user_id == user.id).all()
     print("Current meals:")
     for meal in meals:
-        print(meal.name)
+        print(f"Meal: {meal.name} - Tags: {', '.join(tag.name for tag in meal.meal_tags)}")
+        print("Ingredients: " + ", ".join(meal.ingredients))
+        print("")
 
 def see_current_plan(user):
     meal_plans = MealPlan.query.filter(MealPlan.user_id == user.id).all()
