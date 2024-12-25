@@ -73,7 +73,8 @@ def plan_meals(user, unwanted_tags, start_date, end_date):
     ).all()
     existing_dates = {meal_plan.meal_date for meal_plan in existing_meal_plans}
 
-    planned_meals = random.sample(list(meals), 3)
+    planned_meals = random.choices(
+        list(meals), k=(end_date - start_date).days + 1)
     meal_plans = []
     current_date = start_date
 
