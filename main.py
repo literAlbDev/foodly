@@ -49,7 +49,8 @@ def sign_in():
             print("5. See current meals")
             print("6. See current plan")
             print("7. Update existing meal")
-            print("8. Sign out")
+            print("8. Update current plan")
+            print("9. Sign out")
 
             inner_choice = input("Enter your choice: ")
 
@@ -68,6 +69,8 @@ def sign_in():
             elif inner_choice == "7":
                 update_meal(user)
             elif inner_choice == "8":
+                update_current_plan(user)
+            elif inner_choice == "9":
                 break
             else:
                 print("Invalid choice. Please try again.")
@@ -168,6 +171,47 @@ def update_meal(user):
         print("Meal updated successfully.")
     else:
         print("Meal not found.")
+
+def update_current_plan(user):
+    meal_plans = MealPlan.query.filter(MealPlan.user_id == user.id).all()
+    print("Current plan:")
+    for i, meal_plan in enumerate(meal_plans):
+        print(f"{i+1}. Meal: {meal_plan.meal.name} on {meal_plan.meal_date}")
+
+    choice = input("Enter the number of the meal plan to edit (or '0' to cancel): ")
+    if choice == "0":
+        return
+
+    try:
+        index = int(choice) - 1
+        if index < 0 or index >= len(meal_plans):
+            print("Invalid choice. Please try again.")
+            return
+
+        meal_plan = meal_plans[index]
+        print(f"Editing meal plan: {meal_plan.meal.name} on {meal_plan.meal_date}")
+
+        new_meal_name = input("Enter the new meal name: ")
+        new_meal_date = input("Enter the new meal date (YYYY-MM-DD): ")
+
+        meal = Meal.query.filter_by(name=new_meal_name, user_id=user.id).first()
+        if not meal:
+            print("Meal not found.")
+            return
+
+        try:
+            new_meal_date = datetime.strptime(new_meal_date, "%Y-%m-%d").date()
+        except ValueError:
+            print("Invalid date format. Please enter the date in YYYY-MM-DD format.")
+            return
+
+        meal_plan.meal = meal
+        meal_plan.meal_date = new_meal_date
+        db.session.commit()
+        print("Meal plan updated successfully.")
+
+    except ValueError:
+        print("Invalid choice. Please enter a number.")
 
 if __name__ == "__main__":
     app = create_app()
