@@ -5,30 +5,6 @@ import random
 from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 
-def plan_meals(user_id, unwanted_tags):
-    # Retrieve user allergies from the User model
-    user = User.query.get(user_id)
-    user_allergies = user.allergies
-
-    # Query meals that do not contain any of the user's allergies
-    meals = Meal.query.filter(Meal.user_id == user_id).filter(~Meal.ingredients.contains(user_allergies))
-
-    # Randomly select meals for the next 3 days
-    planned_meals = random.sample(list(meals), 3)
-    # Create MealPlan objects for each planned meal with their dates
-    meal_plans = []
-    today = datetime.now().date()
-    for i, meal in enumerate(planned_meals):
-        date = today + timedelta(days=i)
-        meal_plan = MealPlan(meal=meal, meal_date=date, user=user, meal_type='dinner')
-        meal_plans.append(meal_plan)
-
-    # Save the meal plans to the database
-    db.session.add_all(meal_plans)
-    db.session.commit()
-
-    return meal_plans
-
 # if app is run directly, a cli version of the app is run which does: sign in and/or sign up, adding allergies and meals, and planning meals
 
 def clear():
