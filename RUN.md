@@ -18,5 +18,5 @@ python generate_data.py
 ## Run the project
 
 ```bash
-python main.py
+python tui.py
 ```
